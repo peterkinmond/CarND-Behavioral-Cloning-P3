@@ -14,8 +14,10 @@ images = []
 measurements = []
 # for line in lines[0:2]:
 for line in lines:
-    filename = line[0]
-    image = cv2.imread(filename)
+    source_path = line[0]
+    filename = source_path.split('/')[-1]
+    current_path = './data/IMG/' + filename
+    image = cv2.imread(current_path)
     images.append(image)
     measurement = float(line[3]) # steering angle
     measurements.append(measurement)
@@ -29,16 +31,29 @@ y_train = np.array(measurements)
 
 # Create the model
 from keras.models import Sequential
-from keras.layers import Flatten, Dense
+from keras.layers import Flatten, Dense, Lambda
+from keras.layers.convolutional import Conv2D
+from keras.layers.pooling import MaxPooling2D
 
 model = Sequential()
-model.add(Flatten(input_shape=(160,320,3)))
+# pixel_normalized = pixel / 255.0 # shifts values into 0 to 1 range
+# pixel_mean_centered = pixel_normalized - 0.5 # shifts values into -0.5 to 0.5 range
+model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+
+model.add(Conv2D(6, (5, 5), activation="relu"))
+model.add(MaxPooling2D())
+model.add(Conv2D(6, (5, 5), activation="relu"))
+model.add(MaxPooling2D())
+model.add(Flatten())
+model.add(Dense(120))
+model.add(Dense(84))
 model.add(Dense(1))
 
 # Train the model
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True)
+model.fit(X_train, y_train, validation_split=0.2, epochs=4, shuffle=True)
 
 # Save the model
 model.save('model.h5')
+exit()
 
