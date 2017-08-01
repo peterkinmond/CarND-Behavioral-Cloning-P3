@@ -39,14 +39,17 @@ y_train = np.array(measurements)
 
 # Create the model
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Lambda
+from keras.layers import Flatten, Dense, Lambda, Cropping2D
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 
 model = Sequential()
+
+# Crop the irrelevant part of the images (top tree line, bottom car pixels)
+model.add(Cropping2D(cropping=((80, 20), (0, 0)), input_shape=(160,320,3)))
 # pixel_normalized = pixel / 255.0 # shifts values into 0 to 1 range
 # pixel_mean_centered = pixel_normalized - 0.5 # shifts values into -0.5 to 0.5 range
-model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+model.add(Lambda(lambda x: x / 255.0 - 0.5))
 
 model.add(Conv2D(6, (5, 5), activation="relu"))
 model.add(MaxPooling2D())
