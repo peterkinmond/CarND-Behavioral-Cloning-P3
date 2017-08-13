@@ -14,7 +14,7 @@ images = []
 measurements = []
 # for line in lines[0:2]:
 for line in lines:
-    source_path = line[0]
+    source_path = line[0] # Center image
     filename = source_path.split('/')[-1]
     current_path = './data/data/IMG/' + filename
     image = cv2.imread(current_path)
