@@ -4,8 +4,9 @@ import numpy as np
 
 
 # Import driving image data
+data_directory = './data/data/'
 lines = []
-with open('./data/data/driving_log.csv') as csvfile:
+with open(data_directory + 'driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
     for line in reader:
         lines.append(line)
@@ -16,7 +17,7 @@ measurements = []
 for line in lines:
     source_path = line[0] # Center image
     filename = source_path.split('/')[-1]
-    current_path = './data/data/IMG/' + filename
+    current_path = data_directory + 'IMG/' + filename
     image = cv2.imread(current_path)
     images.append(image)
     measurement = float(line[3]) # steering angle
